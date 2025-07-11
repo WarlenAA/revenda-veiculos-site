@@ -1,0 +1,33 @@
+<div class="row">
+    <div class="col-md-8 mb-4">
+        <div id="carouselFotos" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner rounded">
+                {{#with (getFotos veiculo.fotos) as |fotoArray|}}
+                    {{#each fotoArray}}
+                        <div class="carousel-item {{#if @first}}active{{/if}}">
+                            <img src="{{this}}" class="d-block w-100" alt="Foto de {{../veiculo.marca}} {{../veiculo.modelo}}" style="max-height: 500px; object-fit: contain;">
+                        </div>
+                    {{/each}}
+                {{/with}}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotos" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Anterior</span></button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselFotos" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Próximo</span></button>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h1 class="fw-bold">{{veiculo.marca}} {{veiculo.modelo}}</h1>
+        <h2 class="text-success mb-4 fw-light">{{formatarPreco veiculo.preco}}</h2>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-transparent text-white"><strong>Ano:</strong> {{veiculo.ano}}</li>
+            <li class="list-group-item bg-transparent text-white"><strong>KM:</strong> {{veiculo.quilometragem}}</li>
+            <li class="list-group-item bg-transparent text-white">
+                <strong>Características:</strong>
+                <p class="text-white-50 mt-1">{{veiculo.caracteristicas}}</p>
+            </li>
+        </ul>
+        <a href="https://api.whatsapp.com/send?phone=55{{getWhatsapp}}&text=Olá! Tenho interesse no veículo {{veiculo.marca}} {{veiculo.modelo}} (ano {{veiculo.ano}}) que vi no site." target="_blank" class="btn btn-success btn-lg w-100 mt-4 d-flex align-items-center justify-content-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.1-.836-.414-1.079-.483-.244-.069-.42-.1-.599.1s-.377.484-.463.579-.17.111-.318.041c-.149-.07-.633-.234-1.204-.758-.447-.404-.753-.9-.84-1.054-.087-.154-.002-.237.093-.331.083-.084.197-.222.296-.331.1-.111.133-.184.198-.31.065-.126.033-.234-.016-.331-.05-.097-.472-1.144-.646-1.565-.172-.42-.345-.363-.472-.363-.122 0-.264-.016-.403-.016-.14 0-.376.043-.57.208-.196.165-.747.73-1.005 1.488-.258.758-.52 1.488.24 2.45.748.948 1.83 2.133 4.416 3.084 2.592.955 2.986.917 3.468.917.482 0 1.503-.615 1.71-1.204.207-.589.207-1.096.142-1.204-.064-.108-.222-.165-.42-.265z"/></svg>
+            Falar no WhatsApp
+        </a>
+    </div>
+</div>

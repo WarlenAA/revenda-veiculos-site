@@ -1,0 +1,12 @@
+# Dependências
+node_modules/
+
+# Arquivos de Log
+npm-debug.log*
+
+# Arquivos de Variáveis de Ambiente
+.env
+
+# Banco de dados local
+database/revenda.db
+database/revenda.db-journal

@@ -1,0 +1,31 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Gerenciar Estoque</h1>
+    <a href="/admin/adicionar" class="btn btn-primary">Adicionar Novo Veículo</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead><tr><th>Foto</th><th>Marca</th><th>Modelo</th><th>Ano</th><th>Preço</th><th>Ações</th></tr></thead>
+        <tbody>
+            {{#if veiculos}}
+                {{#each veiculos}}
+                <tr>
+                    <td>{{#with (getFotos this.fotos) as |fotoArray|}}<img src="{{fotoArray.[0]}}" width="100" class="rounded">{{/with}}</td>
+                    <td>{{this.marca}}</td>
+                    <td>{{this.modelo}}</td>
+                    <td>{{this.ano}}</td>
+                    <td>{{formatarPreco this.preco}}</td>
+                    <td>
+                        <a href="/admin/editar/{{this.id}}" class="btn btn-warning btn-sm">Editar</a>
+                        <form action="/admin/deletar/{{this.id}}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza?');">
+                            <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+                {{/each}}
+            {{else}}
+                <tr><td colspan="6" class="text-center">Nenhum veículo cadastrado.</td></tr>
+            {{/if}}
+        </tbody>
+    </table>
+</div>

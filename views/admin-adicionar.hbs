@@ -1,0 +1,20 @@
+<h1>Adicionar Novo Veículo</h1>
+<hr>
+<form action="/admin/adicionar" method="POST" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-6 mb-3"><label for="marca" class="form-label">Marca</label><input type="text" class="form-control" id="marca" name="marca" required></div>
+        <div class="col-md-6 mb-3"><label for="modelo" class="form-label">Modelo</label><input type="text" class="form-control" id="modelo" name="modelo" required></div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3"><label for="ano" class="form-label">Ano</label><input type="number" class="form-control" id="ano" name="ano" required></div>
+        <div class="col-md-6 mb-3"><label for="preco" class="form-label">Preço (Ex: 55000.00)</label><input type="number" step="0.01" class="form-control" id="preco" name="preco" required></div>
+    </div>
+     <div class="row">
+        <div class="col-md-6 mb-3"><label for="quilometragem" class="form-label">Quilometragem</label><input type="number" class="form-control" id="quilometragem" name="quilometragem"></div>
+    </div>
+    <div class="mb-3"><label for="caracteristicas" class="form-label">Características (Ex: Completo, Ar Condicionado...)</label><textarea class="form-control" id="caracteristicas" name="caracteristicas" rows="3"></textarea></div>
+    <div class="mb-3"><label for="fotos" class="form-label">Fotos (até 8 imagens)</label><input class="form-control" type="file" id="fotos" name="fotos" multiple accept="image/*"></div>
+    <hr>
+    <button type="submit" class="btn btn-primary">Salvar Veículo</button>
+    <a href="/admin" class="btn btn-secondary">Cancelar</a>
+</form>
