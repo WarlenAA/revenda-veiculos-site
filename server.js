@@ -1,5 +1,3 @@
-// Arquivo: server.js (FINAL E CORRIGIDO PARA DEPLOY)
-
 require('dotenv').config();
 
 const express = require('express');
@@ -8,27 +6,43 @@ const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const fs = require('fs'); // Módulo File System para criar pastas
+const fs = require('fs');
+const bcrypt = require('bcrypt'); // Adicionado aqui para o usuário padrão
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Garante que a pasta do banco de dados exista antes de conectar
 const db_path = path.join(__dirname, 'database');
 fs.mkdirSync(db_path, { recursive: true });
 const db_file = path.join(db_path, 'revenda.db');
 
 const db = new sqlite3.Database(db_file, (err) => {
-    if (err) {
-        return console.error('Erro ao ABRIR o banco de dados:', err.message);
-    }
+    if (err) return console.error('Erro ao ABRIR o banco de dados:', err.message);
     console.log('Conectado ao banco de dados SQLite.');
 
-    // O servidor SÓ COMEÇA a ser configurado DEPOIS que a conexão com o DB é bem-sucedida
     db.serialize(() => {
         db.run(`CREATE TABLE IF NOT EXISTS veiculos (id INTEGER PRIMARY KEY AUTOINCREMENT, marca TEXT NOT NULL, modelo TEXT NOT NULL, ano INTEGER NOT NULL, preco REAL NOT NULL, quilometragem INTEGER, caracteristicas TEXT, fotos TEXT)`);
         db.run(`CREATE TABLE IF NOT EXISTS usuarios (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, senha_hash TEXT NOT NULL, senha_alterada INTEGER DEFAULT 0)`);
         console.log("Tabelas verificadas/criadas com sucesso.");
+
+        // Bloco para criar o usuário administrador padrão
+        const adminEmail = 'admin@suarevenda.com';
+        const adminSenhaPadrao = 'admin123';
+        const saltRounds = 10;
+
+        bcrypt.hash(adminSenhaPadrao, saltRounds, (err, hash) => {
+            if (err) return console.error('Erro ao gerar hash da senha:', err.message);
+
+            const sql = `INSERT OR IGNORE INTO usuarios (email, senha_hash, senha_alterada) VALUES (?, ?, 0)`;
+            db.run(sql, [adminEmail, hash], function(err) {
+                if (err) return console.error('Erro ao inserir usuário padrão:', err.message);
+                if (this.changes > 0) {
+                    console.log(`Usuário administrador padrão '${adminEmail}' criado com sucesso.`);
+                } else {
+                    console.log(`Usuário administrador padrão '${adminEmail}' já existe.`);
+                }
+            });
+        });
     });
 
     app.use(express.static(path.join(__dirname, 'public')));
