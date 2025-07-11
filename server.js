@@ -1,4 +1,4 @@
-// Arquivo: server.js (FINAL E CORRIGIDO)
+// Arquivo: server.js (FINAL E CORRIGIDO PARA DEPLOY)
 
 require('dotenv').config();
 
@@ -8,35 +8,26 @@ const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const fs = require('fs'); // Módulo File System para criar pastas
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const db_file = path.join(__dirname, 'database', 'revenda.db');
+// Garante que a pasta do banco de dados exista antes de conectar
+const db_path = path.join(__dirname, 'database');
+fs.mkdirSync(db_path, { recursive: true });
+const db_file = path.join(db_path, 'revenda.db');
+
 const db = new sqlite3.Database(db_file, (err) => {
     if (err) {
         return console.error('Erro ao ABRIR o banco de dados:', err.message);
     }
     console.log('Conectado ao banco de dados SQLite.');
 
+    // O servidor SÓ COMEÇA a ser configurado DEPOIS que a conexão com o DB é bem-sucedida
     db.serialize(() => {
-        // Tabela de veículos (CORRIGIDO)
-        db.run(`
-            CREATE TABLE IF NOT EXISTS veiculos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                marca TEXT NOT NULL, modelo TEXT NOT NULL, ano INTEGER NOT NULL,
-                preco REAL NOT NULL, quilometragem INTEGER, caracteristicas TEXT, fotos TEXT
-            )
-        `);
-        // Tabela de usuários
-        db.run(`
-            CREATE TABLE IF NOT EXISTS usuarios (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                email TEXT NOT NULL UNIQUE,
-                senha_hash TEXT NOT NULL,
-                senha_alterada INTEGER DEFAULT 0
-            )
-        `);
+        db.run(`CREATE TABLE IF NOT EXISTS veiculos (id INTEGER PRIMARY KEY AUTOINCREMENT, marca TEXT NOT NULL, modelo TEXT NOT NULL, ano INTEGER NOT NULL, preco REAL NOT NULL, quilometragem INTEGER, caracteristicas TEXT, fotos TEXT)`);
+        db.run(`CREATE TABLE IF NOT EXISTS usuarios (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, senha_hash TEXT NOT NULL, senha_alterada INTEGER DEFAULT 0)`);
         console.log("Tabelas verificadas/criadas com sucesso.");
     });
 
@@ -78,6 +69,5 @@ const db = new sqlite3.Database(db_file, (err) => {
 
     app.listen(PORT, () => {
         console.log(`🚀 Servidor rodando na porta ${PORT}. Acesse http://localhost:${PORT}`);
-        console.log(`   Painel do Vendedor: http://localhost:${PORT}/login`);
     });
 });
