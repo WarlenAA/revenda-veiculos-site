@@ -7,7 +7,7 @@ const sqlite3 = require('sqlite3').verbose();
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
-const bcrypt = require('bcrypt'); // Adicionado aqui para o usuário padrão
+const bcrypt = require('bcrypt');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,18 +21,28 @@ const db = new sqlite3.Database(db_file, (err) => {
     console.log('Conectado ao banco de dados SQLite.');
 
     db.serialize(() => {
-        db.run(`CREATE TABLE IF NOT EXISTS veiculos (id INTEGER PRIMARY KEY AUTOINCREMENT, marca TEXT NOT NULL, modelo TEXT NOT NULL, ano INTEGER NOT NULL, preco REAL NOT NULL, quilometragem INTEGER, caracteristicas TEXT, fotos TEXT)`);
+        db.run(`
+            CREATE TABLE IF NOT EXISTS veiculos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                marca TEXT NOT NULL,
+                modelo TEXT NOT NULL,
+                ano INTEGER NOT NULL,
+                cor TEXT,
+                preco REAL NOT NULL,
+                quilometragem INTEGER,
+                caracteristicas TEXT,
+                fotos TEXT
+            )
+        `);
         db.run(`CREATE TABLE IF NOT EXISTS usuarios (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, senha_hash TEXT NOT NULL, senha_alterada INTEGER DEFAULT 0)`);
         console.log("Tabelas verificadas/criadas com sucesso.");
 
-        // Bloco para criar o usuário administrador padrão
         const adminEmail = 'admin@suarevenda.com';
         const adminSenhaPadrao = 'admin123';
         const saltRounds = 10;
 
         bcrypt.hash(adminSenhaPadrao, saltRounds, (err, hash) => {
             if (err) return console.error('Erro ao gerar hash da senha:', err.message);
-
             const sql = `INSERT OR IGNORE INTO usuarios (email, senha_hash, senha_alterada) VALUES (?, ?, 0)`;
             db.run(sql, [adminEmail, hash], function(err) {
                 if (err) return console.error('Erro ao inserir usuário padrão:', err.message);
@@ -65,9 +75,13 @@ const db = new sqlite3.Database(db_file, (err) => {
         extname: '.hbs',
         defaultLayout: 'main',
         helpers: {
-          formatarPreco: (preco) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(preco),
-          getFotos: (fotos) => (fotos && typeof fotos === 'string') ? fotos.split(',') : [],
-          getWhatsapp: () => process.env.VENDEDOR_WHATSAPP
+            formatarPreco: (preco) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(preco),
+            formatarMilhar: (numero) => {
+                if (!numero) return '';
+                return new Intl.NumberFormat('pt-BR').format(numero);
+            },
+            getFotos: (fotos) => (fotos && typeof fotos === 'string') ? fotos.split(',') : [],
+            getWhatsapp: () => process.env.VENDEDOR_WHATSAPP
         }
     }));
     app.set('view engine', 'hbs');

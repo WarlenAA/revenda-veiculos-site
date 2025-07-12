@@ -1,3 +1,4 @@
+// Arquivo: adicionar-usuario.js
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const path = require('path');
@@ -20,7 +21,9 @@ bcrypt.hash(senha, saltRounds, (err, hash) => {
         'INSERT INTO usuarios (email, senha_hash) VALUES (?, ?)',
         [email, hash],
         function(err) {
-            if (err) return console.error("Erro ao adicionar usuário (talvez o email já exista?):", err.message);
+            if (err) {
+                return console.error("Erro ao adicionar usuário (talvez o email já exista?):", err.message);
+            }
             console.log(`Usuário ${email} adicionado com sucesso! ID: ${this.lastID}`);
         }
     );

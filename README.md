@@ -33,6 +33,9 @@
 
 
 
+git add .
+git commit -m "usuario padrão"
+git push
 
 
 Passo a Passo Para Fazer Tudo Funcionar (Do Zero)

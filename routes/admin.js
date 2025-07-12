@@ -33,10 +33,15 @@ router.get('/adicionar', (req, res) => {
 });
 
 router.post('/adicionar', upload.array('fotos', 8), (req, res) => {
-    const { marca, modelo, ano, preco, quilometragem, caracteristicas } = req.body;
+    const { marca, modelo, ano, cor, preco, quilometragem, caracteristicas } = req.body;
+    
+    // Limpa os números para salvar no formato correto (ex: 94550.19)
+    const precoLimpo = String(preco).replace(/\./g, '').replace(',', '.');
+    const kmLimpo = String(quilometragem).replace(/\./g, '');
+    
     const fotos = req.files.map(file => `/uploads/${file.filename}`).join(',');
-    const sql = `INSERT INTO veiculos (marca, modelo, ano, preco, quilometragem, caracteristicas, fotos) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    req.db.run(sql, [marca, modelo, ano, preco, quilometragem, caracteristicas, fotos], (err) => {
+    const sql = `INSERT INTO veiculos (marca, modelo, ano, cor, preco, quilometragem, caracteristicas, fotos) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    req.db.run(sql, [marca, modelo, ano, cor, precoLimpo, kmLimpo, caracteristicas, fotos], (err) => {
         if (err) return res.status(500).send("Erro ao adicionar veículo.");
         res.redirect('/admin');
     });
@@ -53,17 +58,21 @@ router.get('/editar/:id', (req, res) => {
 
 router.post('/editar/:id', upload.array('fotos', 8), (req, res) => {
     const id = req.params.id;
-    const { marca, modelo, ano, preco, quilometragem, caracteristicas, fotos_existentes } = req.body;
+    const { marca, modelo, ano, cor, preco, quilometragem, caracteristicas, fotos_existentes } = req.body;
     
+    // Limpa os números para salvar no formato correto (ex: 94550.19)
+    const precoLimpo = String(preco).replace(/\./g, '').replace(',', '.');
+    const kmLimpo = String(quilometragem).replace(/\./g, '');
+
+    // ... (o restante do código que lida com as fotos continua igual)
     let novasFotos = [];
     if (req.files && req.files.length > 0) {
         novasFotos = req.files.map(file => `/uploads/${file.filename}`);
     }
-    
     const fotosFinais = [].concat(fotos_existentes || [], novasFotos).join(',');
 
-    const sql = `UPDATE veiculos SET marca = ?, modelo = ?, ano = ?, preco = ?, quilometragem = ?, caracteristicas = ?, fotos = ? WHERE id = ?`;
-    req.db.run(sql, [marca, modelo, ano, preco, quilometragem, caracteristicas, fotosFinais, id], (err) => {
+    const sql = `UPDATE veiculos SET marca = ?, modelo = ?, ano = ?, cor = ?, preco = ?, quilometragem = ?, caracteristicas = ?, fotos = ? WHERE id = ?`;
+    req.db.run(sql, [marca, modelo, ano, cor, precoLimpo, kmLimpo, caracteristicas, fotosFinais, id], (err) => {
         if (err) return res.status(500).send("Erro ao atualizar o veículo.");
         res.redirect('/admin');
     });
