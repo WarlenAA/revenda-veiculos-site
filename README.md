@@ -34,41 +34,18 @@
 
 
 git add .
-git commit -m "usuario padrão"
+git commit -m "atualização geral"
 git push
 
 
-Passo a Passo Para Fazer Tudo Funcionar (Do Zero)
-
-Agora, siga esta sequência exatamente.
-
-    Apague o Banco de Dados Antigo (para começar limpo):
-    Na sua pasta do projeto, delete a pasta database ou apenas o arquivo revenda.db que está dentro dela.
-
-    Rode o Servidor Para Criar as Tabelas:
-    No terminal, execute:
-    Bash
-
 npm run dev
 
-Você deverá ver as mensagens de "Conectado", "Tabelas verificadas" e "Servidor rodando". Isso criou o banco de dados e as tabelas carros e usuarios corretamente.
-
-Pare o Servidor:
-No terminal, pressione Ctrl + C para parar o servidor.
 
 Adicione o Primeiro Usuário (AGORA VAI FUNCIONAR):
 Agora que a tabela usuarios existe, execute o script para criar seu usuário.
-Abra outro terminal na pasta
-Bash
+
 
 node adicionar-usuario.js warlen@gmail.com senha123
 
-Você deverá ver a mensagem: Usuário warlen@gmail.com adicionado com sucesso!
-
-Inicie o Servidor Novamente:
-Agora, com tudo no lugar, inicie o servidor para usar o site.
-Bash
-
-    npm run dev
 
 Pronto! Agora seu sistema está funcionando. Acesse http://localhost:3000/login, use as credenciais que você acabou de criar e o fluxo de troca de senha obrigatória será iniciado.

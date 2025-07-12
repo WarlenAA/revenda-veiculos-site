@@ -1,21 +1,24 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    req.db.all("SELECT * FROM veiculos ORDER BY id DESC", [], (err, rows) => {
-        if (err) return res.status(500).send("Erro ao buscar veículos.");
-        res.render('index', { veiculos: rows, pageTitle: 'Veículos em Estoque' });
-    });
+router.get('/', async (req, res) => {
+    try {
+        const result = await req.db.query("SELECT * FROM veiculos ORDER BY id DESC");
+        res.render('index', { veiculos: result.rows, pageTitle: 'Veículos em Estoque' });
+    } catch (err) {
+        res.status(500).send("Erro ao buscar veículos.");
+    }
 });
 
-router.get('/veiculo/:id', (req, res) => {
+router.get('/veiculo/:id', async (req, res) => {
     const id = req.params.id;
-    req.db.get("SELECT * FROM veiculos WHERE id = ?", [id], (err, row) => {
-        if (err) return res.status(500).send("Erro ao buscar o veículo.");
-        if (!row) return res.status(404).send("Veículo não encontrado.");
-        res.render('veiculo', { veiculo: row, pageTitle: `${row.marca} ${row.modelo}` });
-    });
+    try {
+        const result = await req.db.query("SELECT * FROM veiculos WHERE id = $1", [id]);
+        if (result.rows.length === 0) return res.status(404).send("Veículo não encontrado.");
+        res.render('veiculo', { veiculo: result.rows[0], pageTitle: `${result.rows[0].marca} ${result.rows[0].modelo}` });
+    } catch (err) {
+        res.status(500).send("Erro ao buscar o veículo.");
+    }
 });
 
 module.exports = router;
-

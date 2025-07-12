@@ -8,10 +8,11 @@ router.get('/login', (req, res) => {
     res.render('login', { layout: 'main', pageTitle: 'Login' });
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
     const { email, senha } = req.body;
-    req.db.get("SELECT * FROM usuarios WHERE email = ?", [email], async (err, user) => {
-        if (err) return res.status(500).send("Erro no servidor.");
+    try {
+        const result = await req.db.query("SELECT * FROM usuarios WHERE email = $1", [email]);
+        const user = result.rows[0];
         if (!user) return res.render('login', { error: "Email ou senha inválidos." });
 
         const match = await bcrypt.compare(senha, user.senha_hash);
@@ -28,7 +29,9 @@ router.post('/login', (req, res) => {
         } else {
             res.render('login', { error: "Email ou senha inválidos." });
         }
-    });
+    } catch (err) {
+        res.status(500).send("Erro no servidor.");
+    }
 });
 
 router.get('/primeiro-acesso', (req, res) => {
@@ -43,16 +46,17 @@ router.post('/primeiro-acesso', async (req, res) => {
         return res.render('primeiro-acesso', { error: 'As senhas não coincidem.' });
     }
 
-    const novaSenhaHash = await bcrypt.hash(nova_senha, saltRounds);
-    req.db.run(
-        "UPDATE usuarios SET senha_hash = ?, senha_alterada = 1 WHERE id = ?",
-        [novaSenhaHash, req.session.userId],
-        function(err) {
-            if (err) return res.status(500).send("Erro ao atualizar a senha.");
-            req.session.senha_alterada = 1;
-            res.redirect('/admin');
-        }
-    );
+    try {
+        const novaSenhaHash = await bcrypt.hash(nova_senha, saltRounds);
+        await req.db.query(
+            "UPDATE usuarios SET senha_hash = $1, senha_alterada = 1 WHERE id = $2",
+            [novaSenhaHash, req.session.userId]
+        );
+        req.session.senha_alterada = 1;
+        res.redirect('/admin');
+    } catch (err) {
+        res.status(500).send("Erro ao atualizar a senha.");
+    }
 });
 
 router.get('/logout', (req, res) => {
@@ -64,4 +68,3 @@ router.get('/logout', (req, res) => {
 });
 
 module.exports = router;
-
