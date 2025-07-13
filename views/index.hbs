@@ -1,11 +1,35 @@
 <div class="p-5 mb-4 jumbotron-custom">
     <div class="container-fluid py-5">
         <h1 class="display-5 fw-bold">Nossos Veículos em Estoque</h1>
-        <p class="col-md-8 fs-4">Confira os melhores veículos selecionados para você. Qualidade e confiança que você pode ver.</p>
+        <p class="col-md-8 fs-4">Encontre o veículo ideal para você. Use os filtros abaixo para refinar sua busca.</p>
     </div>
 </div>
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+<div class="card card-body mb-4">
+    <form action="/" method="GET" class="row g-3 align-items-end">
+        <div class="col-md-6">
+            <label for="busca" class="form-label">Buscar por Marca ou Modelo</label>
+            <input type="text" class="form-control" id="busca" name="busca" placeholder="Ex: Honda Civic, Toyota Hilux..." value="{{busca}}">
+        </div>
+        <div class="col-md-4">
+            <label for="ordenar" class="form-label">Ordenar por</label>
+            <select id="ordenar" name="ordenar" class="form-select">
+                <option value="recentes" {{isSelected ordenar 'recentes'}}>Mais Recentes</option>
+                <option value="antigos" {{isSelected ordenar 'antigos'}}>Mais Antigos</option>
+                <option value="preco_asc" {{isSelected ordenar 'preco_asc'}}>Menor Preço</option>
+                <option value="preco_desc" {{isSelected ordenar 'preco_desc'}}>Maior Preço</option>
+                <option value="ano_recente" {{isSelected ordenar 'ano_recente'}}>Ano (mais novo)</option>
+                <option value="ano_antigo" {{isSelected ordenar 'ano_antigo'}}>Ano (mais velho)</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </form>
+</div>
+
+
+<div class="row row-cols-2 row-cols-lg-3 g-4">
     {{#if veiculos}}
         {{#each veiculos}}
         <div class="col">
@@ -15,7 +39,7 @@
                 {{/with}}
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{this.marca}} {{this.modelo}}</h5>
-                    <p class="card-text text-white-50">Ano: {{this.ano}}</p>
+                    <p class="card-text text-muted">Ano: {{this.ano}}</p>
                     <h4 class="text-success mt-auto">{{formatarPreco this.preco}}</h4>
                 </div>
                 <div class="card-footer">
@@ -26,8 +50,29 @@
         {{/each}}
     {{else}}
         <div class="col-12 text-center py-5">
-             <p class="fs-4 text-white-50">Nenhum veículo em estoque no momento.</p>
-             <p>Adicione o primeiro no painel do vendedor!</p>
+             <p class="fs-4 text-muted">Nenhum veículo encontrado com os filtros aplicados.</p>
+             <a href="/" class="btn btn-secondary">Limpar Filtros</a>
         </div>
     {{/if}}
 </div>
+
+
+{{#if pagination.show}}
+<nav aria-label="Navegação de página" class="mt-5 d-flex justify-content-center">
+    <ul class="pagination">
+        <li class="page-item {{#unless pagination.hasPrevPage}}disabled{{/unless}}">
+            <a class="page-link" href="/?busca={{busca}}&ordenar={{ordenar}}&pagina={{pagination.prevPage}}" tabindex="-1" aria-disabled="true">Anterior</a>
+        </li>
+
+        {{#each pagination.pages}}
+        <li class="page-item {{#if (isSelected ../pagination.currentPage this)}}active{{/if}}">
+            <a class="page-link" href="/?busca={{../busca}}&ordenar={{../ordenar}}&pagina={{this}}">{{this}}</a>
+        </li>
+        {{/each}}
+
+        <li class="page-item {{#unless pagination.hasNextPage}}disabled{{/unless}}">
+            <a class="page-link" href="/?busca={{busca}}&ordenar={{ordenar}}&pagina={{pagination.nextPage}}">Próximo</a>
+        </li>
+    </ul>
+</nav>
+{{/if}}

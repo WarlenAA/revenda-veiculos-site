@@ -34,7 +34,7 @@
 
 
 git add .
-git commit -m "atualização geral"
+git commit -m "salvando dados online"
 git push
 
 

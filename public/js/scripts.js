@@ -4,26 +4,19 @@
 function formatarMoeda(input) {
     let valor = input.value;
 
-    // Remove tudo que não for dígito
-    valor = valor.replace(/\D/g, '');
+    // Remove tudo que não for dígito para ter apenas o número puro
+    const digitos = valor.replace(/\D/g, '');
 
-    // Se o valor for vazio, não faz nada
-    if (valor.length === 0) {
-        return;
-    }
+    // Converte para número, tratando como centavos
+    const numero = Number(digitos) / 100;
 
-    // Adiciona zeros à esquerda se necessário para ter pelo menos 3 dígitos (para os centavos)
-    valor = valor.padStart(3, '0');
-
-    // Separa os centavos do resto do número
-    let inteiro = valor.slice(0, -2);
-    let centavos = valor.slice(-2);
-
-    // Formata a parte inteira com os pontos de milhar
-    inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-    // Junta tudo novamente
-    input.value = `${inteiro},${centavos}`;
+    // Formata o número para o padrão brasileiro (R$)
+    // e remove o símbolo da moeda, deixando apenas o número formatado.
+    input.value = new Intl.NumberFormat('pt-BR', {
+        // style: 'currency', // Não usamos o estilo de moeda para não mostrar o "R$"
+        // currency: 'BRL',
+        minimumFractionDigits: 2 // Garante que sempre terá 2 casas decimais
+    }).format(numero);
 }
 
 // Formata um valor como número inteiro com pontos de milhar (ex: 120.000)

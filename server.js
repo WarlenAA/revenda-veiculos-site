@@ -93,13 +93,18 @@ app.engine('hbs', engine({
     helpers: {
       formatarPreco: (preco) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(preco),
       formatarMilhar: (numero) => {
-        if (!numero) return '';
+        if (!numero && numero !== 0) return '';
         return new Intl.NumberFormat('pt-BR').format(numero);
       },
       getFotos: (fotos) => (fotos && typeof fotos === 'string') ? fotos.split(',') : [],
-      getWhatsapp: () => process.env.VENDEDOR_WHATSAPP
+      getWhatsapp: () => process.env.VENDEDOR_WHATSAPP,
+      // NOVA FUNÇÃO HELPER ABAIXO
+      isSelected: (valor1, valor2) => {
+          return valor1 === valor2 ? 'selected' : '';
+      }
     }
 }));
+
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
