@@ -48,19 +48,23 @@ const criarTabelas = async () => {
         await pool.query(queryCriarTabelaUsuarios);
         console.log("Tabelas verificadas/criadas com sucesso no PostgreSQL.");
 
-        // Bloco para criar o usuário administrador padrão
-        const adminEmail = 'admin@suarevenda.com';
-        const adminSenhaPadrao = 'admin123';
-        const saltRounds = 10;
-        const hash = await bcrypt.hash(adminSenhaPadrao, saltRounds);
-        
-        const sql = `INSERT INTO usuarios (email, senha_hash, senha_alterada) VALUES ($1, $2, 0) ON CONFLICT (email) DO NOTHING`;
-        const result = await pool.query(sql, [adminEmail, hash]);
+        // Bloco para criar o usuário administrador padrão a partir do .env
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminSenhaPadrao = process.env.ADMIN_DEFAULT_PASSWORD;
 
-        if (result.rowCount > 0) {
-            console.log(`Usuário administrador padrão '${adminEmail}' criado com sucesso.`);
-        } else {
-            console.log(`Usuário administrador padrão '${adminEmail}' já existe.`);
+        // Só tenta criar o usuário se as variáveis estiverem definidas no .env
+        if (adminEmail && adminSenhaPadrao) {
+            const saltRounds = 10;
+            const hash = await bcrypt.hash(adminSenhaPadrao, saltRounds);
+            
+            const sql = `INSERT INTO usuarios (email, senha_hash, senha_alterada) VALUES ($1, $2, 0) ON CONFLICT (email) DO NOTHING`;
+            const result = await pool.query(sql, [adminEmail, hash]);
+
+            if (result.rowCount > 0) {
+                console.log(`Usuário administrador padrão '${adminEmail}' criado com sucesso.`);
+            } else {
+                console.log(`Usuário administrador padrão '${adminEmail}' já existe.`);
+            }
         }
 
     } catch (err) {

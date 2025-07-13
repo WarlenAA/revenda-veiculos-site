@@ -34,7 +34,7 @@
 
 
 git add .
-git commit -m "salvando dados online"
+git commit -m "adicionado usuario e senha no arquivo .env lado servidor"
 git push
 
 
