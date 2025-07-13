@@ -29,6 +29,38 @@ function formatarInteiro(input) {
     input.value = valor;
 }
 
+// --- LÓGICA DO CONTADOR DE FOTOS DO CARROSSEL ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    const carouselElement = document.getElementById('carouselFotos');
+    
+    // Se o carrossel existir na página
+    if (carouselElement) {
+        const carouselCounter = carouselElement.querySelector('.carousel-counter');
+        const totalItems = carouselElement.querySelectorAll('.carousel-item').length;
+
+        // Função para atualizar o contador
+        const atualizarContador = () => {
+            // Encontra o slide que está ativo no momento
+            const itemAtivo = carouselElement.querySelector('.carousel-item.active');
+            // Pega o índice (posição) do item ativo
+            const indiceAtivo = Array.from(itemAtivo.parentNode.children).indexOf(itemAtivo) + 1;
+            
+            // Atualiza o texto do contador
+            if (carouselCounter) {
+                carouselCounter.textContent = `${indiceAtivo} / ${totalItems}`;
+            }
+        };
+
+        // Atualiza o contador quando a página carrega
+        atualizarContador();
+
+        // Adiciona um "ouvinte" que chama a função de atualizar
+        // toda vez que o carrossel termina de mudar de slide
+        carouselElement.addEventListener('slid.bs.carousel', atualizarContador);
+    }
+});
+
 
 // --- ATRIBUINDO AS FUNÇÕES AOS CAMPOS ---
 
